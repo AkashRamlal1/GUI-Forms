@@ -1,166 +1,95 @@
-
-from calendar import c
-from cgitb import text
-from distutils import bcppcompiler
 import tkinter as tk
-import time
 from tkinter.ttk import Checkbutton
 from tkinter import *
-from pygame import event
-
-checked_up =  False
-checked_down = False
-
-counter = 0
 window = tk.Tk()
-
 window.geometry("500x500")
+window.teller = 0
+window.inspect = True
+#telt op en af
+def optellen():
+    window.teller += 1
+    update_window()
 
+def Optellen(event):
+    optellen()
+    update_window()
 
+def aftellen():
+    window.teller -= 1
+    update_window()
 
-button_up = tk.Button(text= 'up')
+def Aftellen(event):
+    aftellen()
 
-counter_label = tk.Label(
-    window,
-    text= counter
-)
-
-button_down = tk.Button(text= 'down')
-
-button_reset = tk.Button(text='reset')
-
-reset_label = tk.Label(text= '')
-
-
-
-
-    
-   
-def color(counter):
-    
-    if counter < 0:
-        color_choice = "red"
+def verdubbel_delen(event):
+    print(window.inspect)
+    if window.inspect == True:
+        window.teller *= 2
         
+    elif window.inspect == False:
+        window.teller /= 3
+    update_window()
 
-    elif counter > 0:
-     color_choice = "green"
+def herstart_teller(event):
+    window.teller = 0
+    update_window()
+def Herstart_timer(event):
+    herstart_teller()
 
-    else:
-        color_choice = "grey"
-    return color_choice
+def highlight_Tbox(event):
+    teller_box.config(bg='yellow')
 
+opteler = tk.Button(text= "+", command=optellen)
+teller_box = tk.Label(text= window.teller)
+afteler = tk.Button(text="-",command= aftellen)
+herstart = tk.Button(text="herstart", command=herstart_teller) 
 
-def upB():
-    global counter, counter_label,window,up
+Checkplus = IntVar(value=1)
+Checkmin = IntVar(value=1)
 
-    print('hallo')
-    counter = counter + 1
-    counter_label.config(text= counter, bg=color(counter))
-    up = True
-
-def up_button(event):
-    upB()
-    
-    
-def downB():
-    global counter, counter_label,window, color, up
-    counter = counter - 1
-    counter_label.config(text= counter, bg=color(counter))
-    up = False
-    
-
-def down_button(event):
-    downB()
-    
-def resetB():
-    global counter, counter_label, reset_label
-
-    if counter > 0 or counter < 0 :
-        counter = 0
-        counter_label.config(text= counter)
-
-def reset(event ):
-    resetB()
-    
-    
 def pluscheck():
-    global counter,counter_label,cbplus
-
-    if cbplus.get() == 5:
-        counter = counter + 1
-        print(counter)
-        counter_label.config(text=counter)
-        counter_label.after( 1,pluscheck)
+    if Checkplus.get() == 5:
+        window.teller += 1
+        update_window()
+        teller_box.after(10,pluscheck)
 
 def minusCheck():
-    global counter,counter_label,cbminus
+    if Checkmin.get() == 5:
+        window.teller -= 1
+        update_window()
+        teller_box.after(10,minusCheck)
+        
+checkUP = tk.Checkbutton(text="+", onvalue=5, offvalue=6,variable=Checkplus ,command=pluscheck)
+checkDown = tk.Checkbutton(text="-",onvalue=5, offvalue=6,variable=Checkmin, command= minusCheck)
 
-    if cbminus.get() == 5:
-        counter = counter - 1
-        print(counter)
-        counter_label.config(text=counter)
-        counter_label.after( 1,minusCheck)
-
-
-
-window.config(
-
- bg = color(counter)   
-)
-
-def TempColor(event):
-    counter_label.config(bg='yellow')
-def TempcolorEnd(event):
-    counter_label.config(bg=color(counter))
-def DoubleClick(event):
-    global  counter, counter_label
-
-    if up == True:
-        counter = counter * 3
-        counter_label.config(text= counter)
-    elif up == False:
-        counter = counter / 3
-        counter_label.config(text= counter)
-  
-
-cbplus = IntVar(value=1)
-cbminus = IntVar(value=1)
-button_up.config(command= upB)
-button_down.config(command= downB)
-button_reset.config(command= resetB)
-checkUP = tk.Checkbutton(text="+", onvalue=5, offvalue=6,variable=cbplus ,command=pluscheck)
-checkDown = tk.Checkbutton(text="-",onvalue=5, offvalue=6,variable=cbminus, command= minusCheck)
-
-
-
-
-
-button_up.pack(
-    ipady=25,
-    ipadx=100,
+#controleert de kleur
+def Kleur_waarde(event):
+    kleur_waarde() 
+def kleur_waarde():
+    if window.teller>0:
+        teller_box.config(text= window.teller,bg="green")
+    elif window.teller<0:
+        teller_box.config(text= window.teller,bg="red")
+    else:
+        teller_box.config(text= window.teller,bg="grey")
+#deze functie update de window constant 
+def update_window():
+    print(window.teller)
+    kleur_waarde()
     
-    
-)
-
-counter_label.pack(ipady=25,
-    ipadx=100)
-
-button_down.pack(ipady=25,
-    ipadx=100,)
-
-button_reset.pack(ipady=25,
-    ipadx=100,)
-
+opteler.pack(ipady=35,ipadx=110)
+teller_box.pack(ipady=35,ipadx=110)
+afteler.pack(ipady=35, ipadx=110)
+herstart.pack(ipady=35,ipadx=110)
 checkUP.pack()
 checkDown.pack()
 
-counter_label.bind("<Enter>",TempColor)
-counter_label.bind("<Leave>",TempcolorEnd)
-counter_label.bind("<Double-Button-1>", DoubleClick)
-window.bind('<Up>', up_button)
-window.bind('<Down>', down_button)
-window.bind('<space>', DoubleClick)
-window.bind('<Return>', reset)
-
+teller_box.bind("<Double-Button-1>",verdubbel_delen)
+teller_box.bind("<Enter>", highlight_Tbox)
+teller_box.bind("<Leave>",Kleur_waarde)
+window.bind("<Up>",Optellen)
+window.bind("<Down>",Aftellen)
+window.bind("<space>",verdubbel_delen)
+window.bind("<Return>",herstart_teller)
 
 window.mainloop()
